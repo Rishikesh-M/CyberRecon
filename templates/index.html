@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Preloader Styles - Updated with a hacker logo SVG */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b0c10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .preloader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        /* New SVG logo and animation */
+        .hacker-logo {
+            width: 100px;
+            height: 100px;
+            fill: none;
+            stroke: #66fcf1;
+            stroke-width: 2;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+                stroke-dasharray: 200;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+                stroke-dashoffset: 100;
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.8;
+                stroke-dasharray: 200;
+                stroke-dashoffset: 200;
+            }
+        }
+        
+        /* Hacker-themed Background Styles (Unchanged) */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; 
+        }
+
+        /* Main content container (Unchanged) */
+        .container {
+            background-color: rgba(31, 40, 51, 0.85);
+            border: 1px solid #45a29e;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Full-screen canvas for the hacker animation (Unchanged) */
+        #hacker-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        h1 {
+            color: #66fcf1;
+            font-weight: 300;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            background-color: #0b0c10;
+            border: 1px solid #45a29e;
+            color: #c5c6c7;
+        }
+        .form-control:focus {
+            background-color: #0b0c10;
+            border-color: #66fcf1;
+            color: #c5c6c7;
+            box-shadow: 0 0 0 0.25rem rgba(102, 252, 241, 0.25);
+        }
+        .btn-primary {
+            background-color: #45a29e;
+            border-color: #45a29e;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #66fcf1;
+            border-color: #66fcf1;
+            color: #1f2833;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <svg class="hacker-logo" viewBox="0 0 24 24">
+            <path d="M12 2L3 6v12l9 4 9-4V6L12 2zm0 2.22l5.5 2.5-5.5 2.5-5.5-2.5L12 4.22zm0 15.56l-5.5-2.5V8.22l5.5 2.5 5.5-2.5v9.56l-5.5 2.5z"/>
+        </svg>
+    </div>
+    
+    <!-- Canvas for the hacker background animation -->
+    <canvas id="hacker-bg"></canvas>
+
+    <div class="container mt-5 col-12 col-md-8 col-lg-6">
+        <h1 class="text-center">OSINT Search Tool</h1>
+        <p class="text-center mb-4">Enter a username to search for profiles on various social media platforms.</p>
+        <form action="/osint" method="post">
+            <div class="input-group mb-3">
+                <input type="text" name="username" class="form-control" placeholder="Enter username here" required>
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('preloader-hidden');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        };
+        
+        // Hacker background animation logic
+        const canvas = document.getElementById('hacker-bg');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions to the full window size
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        // An array of the hacker characters (numbers, letters, symbols)
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*()_+=-{}[]:;"|<>,./?~`';
+        const fontSize = 16;
+        let columns = Math.floor(width / fontSize);
+
+        // An array to store the y-coordinate of each column's character
+        let drops = Array(columns).fill(1);
+
+        function draw() {
+            // Semi-transparent black rectangle to create the fade effect
+            ctx.fillStyle = 'rgba(11, 12, 16, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.fillStyle = '#66fcf1'; // The digital rain color
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                // Get a random character from the 'characters' string
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                // Draw the character at the current column and y-coordinate
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Reset the drop to the top if it's off-screen and add a random chance to start a new drop
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                // Increment the y-coordinate of the drop
+                drops[i]++;
+            }
+        }
+        
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = Math.floor(width / fontSize);
+            drops.length = columns;
+            drops.fill(1);
+        });
+
+        // Start the animation loop
+        setInterval(draw, 33);
+    </script>
+</body>
+</html>
