@@ -38,6 +38,13 @@ git clone https://github.com/Rishikesh-m/CyberRecon.git
 cd CyberRecon
 ```
 
+```bash
+pip install flask requests bs4
+python app.py
+```
+#### And Click the Link that Shows
+Eg: http://127.0.0.1:8080
+
 ## ⚖️ License
 This project is licensed under the MIT License.
 
